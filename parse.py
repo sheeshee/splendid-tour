@@ -186,12 +186,25 @@ def main():
             print(f"  Roll Count: {info['roll_count']}")
         print()
 
+
 if __name__ == "__main__":
     # For testing with the provided HTML
-    html_sample = """<paste your HTML content here>"""
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == '-f':
+            # Read HTML from a file specified in command line arguments
+        filename = sys.argv[2]
+
+        with open(filename, 'r', encoding='utf-8') as file:
+            html_source = file.read()
+
+    elif len(sys.argv) == 1:
+        # read from stdin
+        html_source = sys.stdin.read()
+    else:
+        raise ValueError("Invalid arguments. Use -f <filename> to read from a file or pipe HTML content directly.")
 
     # Parse directly from the string
-    games = parse_lottery_html(html_sample)
+    games = parse_lottery_html(html_source)
     formatted_games = format_output(games)
 
     # Print results
