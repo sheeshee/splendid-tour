@@ -23,7 +23,3 @@ def test_fetch():
     assert game is not None
     assert game.next_draw_date == datetime.date(2023, 10, 27)
     assert game.jackpot == 14_000_000
-
-
-
-
