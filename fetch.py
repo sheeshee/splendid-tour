@@ -8,7 +8,6 @@ from parse import parse_lottery_html
 
 
 class AbstractSource(ABC):
-
     @abstractmethod
     def get(self) -> str: ...
 
@@ -29,7 +28,11 @@ class Fetcher:
         games_data = parse_lottery_html(html_content)
         result = {}
         for name, data in games_data.items():
-            data['next_draw_date'] = datetime.datetime.strptime(data['next_draw_date'], '%d-%m-%Y').date()
-            data['jackpot'] = Decimal(data['jackpot'].replace('£', '').replace(',', '').replace('M', 'E6'))
-            result[name] = Game(data['next_draw_date'], int(data['jackpot']))
+            data["next_draw_date"] = datetime.datetime.strptime(
+                data["next_draw_date"], "%d-%m-%Y"
+            ).date()
+            data["jackpot"] = Decimal(
+                data["jackpot"].replace("£", "").replace(",", "").replace("M", "E6")
+            )
+            result[name] = Game(data["next_draw_date"], int(data["jackpot"]))
         return result
