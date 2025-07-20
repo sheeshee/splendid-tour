@@ -15,6 +15,7 @@ class AbstractSource(ABC):
 class Game:
     next_draw_date: datetime.date
     jackpot: int
+    roll_count: int
 
 
 @dataclass
@@ -36,10 +37,12 @@ class Fetcher:
                 game_info = games_data[game]
                 next_draw_date = game_info.get("next-draw-date")
                 jackpot = game_info.get("next-draw-jackpot")
+                roll_count = game_info.get("roll-count")
                 if next_draw_date and jackpot:
                     games[game] = Game(
                         next_draw_date=next_draw_date,
                         jackpot=jackpot,
+                        roll_count=roll_count,
                     )
                 else:
                     games[game] = None

@@ -48,6 +48,8 @@ def parse_lottery_html(html_content):
                         info[property] = clean_jackpot(content)
                     elif property == "next-draw-jackpot-short":
                         info[property] = content.replace("£", "")
+                    elif property == "roll-count":
+                        info[property] = int(content)
                     else:
                         info[property] = tag.get("content")
                 else:
