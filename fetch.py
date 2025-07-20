@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import datetime
 
+import requests
 
 from parse import parse_lottery_html
 
@@ -9,6 +10,14 @@ from parse import parse_lottery_html
 class AbstractSource(ABC):
     @abstractmethod
     def get(self) -> str: ...
+
+
+class NationalLotterySource(AbstractSource):
+    URL = "https://www.national-lottery.co.uk/games?icid="
+
+    def get(self) -> str:
+        response = requests.get(self.URL)
+        return response.text
 
 
 @dataclass
@@ -50,3 +59,16 @@ class Fetcher:
                 games[game] = None
 
         return games
+
+
+if __name__ == "__main__":
+    source = NationalLotterySource()
+    fetcher = Fetcher(source=source)
+    games = fetcher.fetch()
+    for game_name, game in games.items():
+        if game:
+            print(
+                f"{game_name.capitalize()}: Next draw on {game.next_draw_date}, Jackpot: £{game.jackpot:,d}, Roll count: {game.roll_count}"
+            )
+        else:
+            print(f"{game_name.capitalize()}: No data available.")
