@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import datetime
-from decimal import Decimal
 
 
 from parse import parse_lottery_html
@@ -20,19 +19,31 @@ class Game:
 
 @dataclass
 class Fetcher:
+    WACTHED_GAMES = {
+        "lotto",
+        "euromillions",
+    }
+
     source: AbstractSource
 
     def fetch(self) -> dict[str, Game]:
         # Simulated fetch logic
         html_content = self.source.get()
         games_data = parse_lottery_html(html_content)
-        result = {}
-        for name, data in games_data.items():
-            data["next_draw_date"] = datetime.datetime.strptime(
-                data["next_draw_date"], "%d-%m-%Y"
-            ).date()
-            data["jackpot"] = Decimal(
-                data["jackpot"].replace("£", "").replace(",", "").replace("M", "E6")
-            )
-            result[name] = Game(data["next_draw_date"], int(data["jackpot"]))
-        return result
+        games = {}
+        for game in self.WACTHED_GAMES:
+            if game in games_data:
+                game_info = games_data[game]
+                next_draw_date = game_info.get("next-draw-date")
+                jackpot = game_info.get("next-draw-jackpot")
+                if next_draw_date and jackpot:
+                    games[game] = Game(
+                        next_draw_date=next_draw_date,
+                        jackpot=jackpot,
+                    )
+                else:
+                    games[game] = None
+            else:
+                games[game] = None
+
+        return games

@@ -1,9 +1,9 @@
-from bs4 import BeautifulSoup
 import decimal
+from datetime import datetime, date
 from decimal import Decimal
 
 import bs4
-
+from bs4 import BeautifulSoup
 
 game_mappings = {
     "lotto": "Lotto",
@@ -39,7 +39,17 @@ def parse_lottery_html(html_content):
             tag = soup.find("meta", {"name": f"{game_key}-{property}"})
             if tag:
                 if isinstance(tag, bs4.element.Tag):
-                    info[property] = tag.get("content")
+                    content = tag.get("content")
+                    assert content is not None
+                    content = str(content).strip()
+                    if property == "next-draw-date":
+                        info[property] = datetime.strptime(content, "%d-%m-%Y").date()
+                    elif property == "next-draw-jackpot":
+                        info[property] = clean_jackpot(content)
+                    elif property == "next-draw-jackpot-short":
+                        info[property] = content.replace("£", "")
+                    else:
+                        info[property] = tag.get("content")
                 else:
                     raise ValueError("tried parsing non-tag element", tag, type(tag))
         games[game_key] = info
@@ -98,5 +108,21 @@ if __name__ == "__main__":
     # Parse directly from the string
     games = parse_lottery_html(html_source)
 
+    def serialize(obj):
+        """Custom serializer for JSON to handle Decimal and datetime objects."""
+        if isinstance(obj, Decimal):
+            return str(obj)
+        elif isinstance(obj, datetime):
+            return obj.isoformat()
+        elif isinstance(obj, date):
+            return obj.isoformat()
+        elif isinstance(obj, dict):
+            return {k: serialize(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [serialize(item) for item in obj]
+        else:
+            return obj
+
     # Print results
+    games = serialize(games)
     print(json.dumps(games, indent=2))
