@@ -19,6 +19,6 @@ if __name__ == "__main__":
         message += f"Lotto must be won! Next draw: {games['lotto'].next_draw_date}, Jackpot: {games['lotto'].jackpot}"
 
     if games["euromillions"].jackpot >= 100_000_000:
-        message += f"Euromillions jackpot is over £100 million! Next draw: {games['euromillions'].next_draw_date}, Jackpot: {games['euromillions'].jackpot}"
+        message += f"Euromillions jackpot is £{games['euromillions'].jackpot // 1_000_000}M! Next draw: {games['euromillions'].next_draw_date}" 
 
     requests.post(os.environ["WEBHOOK"], data=message.encode(encoding="utf-8"))
