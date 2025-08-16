@@ -15,7 +15,7 @@ if __name__ == "__main__":
     message = ""
 
     # National Lottery
-    if games["lotto"].roll_count > 5:
+    if games["lotto"].roll_count >= 5:
         message += f"Lotto must be won! Next draw: {games['lotto'].next_draw_date}, Jackpot: {games['lotto'].jackpot}"
 
     if games["euromillions"].jackpot >= 100_000_000:
