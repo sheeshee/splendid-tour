@@ -26,6 +26,13 @@ class Game:
     jackpot: int
     roll_count: int
 
+    def as_dict(self) -> dict:
+        return {
+            "next_draw_date": self.next_draw_date,
+            "jackpot": self.jackpot,
+            "roll_count": self.roll_count,
+        }
+
 
 @dataclass
 class Fetcher:
